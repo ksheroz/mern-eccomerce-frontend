@@ -31,11 +31,11 @@ const { Title } = Typography;
 function Navbar() {
   const [current, setCurrent] = useState("home");
   const [visible, setVisible] = useState(false);
+  const { search, user } = useSelector((state) => ({ ...state }));
+  const { text } = search;
 
-  let { user } = useSelector((state) => ({ ...state }));
-
-  let dispatch = useDispatch();
-  let history = useHistory();
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const handleClick = (e) => {
     // console.log(e.key);
@@ -58,6 +58,17 @@ function Navbar() {
 
   const onClose = () => {
     setVisible(false);
+  };
+
+  const handleChange = (e) => {
+    dispatch({
+      type: "SEARCH_QUERY",
+      payload: { text: e.target.value },
+    });
+  };
+
+  const handleSubmit = (value, event) => {
+    history.push(`/shop?${text}`);
   };
 
   return (
@@ -83,6 +94,9 @@ function Navbar() {
                   enterButton
                   size="middle"
                   style={{ marginTop: "15px" }}
+                  value={text}
+                  onSearch={handleSubmit}
+                  onChange={handleChange}
                 />
               </Col>
               <Col sm={{ span: 9, offset: 1 }} xs={{ span: 0, offset: 0 }}>
@@ -157,6 +171,9 @@ function Navbar() {
                     bordered={false}
                     size="large"
                     style={{ marginBottom: "12px" }}
+                    value={text}
+                    onPressEnter={handleSubmit}
+                    onChange={handleChange}
                   />
                   <Menu
                     theme="light"

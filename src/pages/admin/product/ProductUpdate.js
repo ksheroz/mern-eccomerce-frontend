@@ -1,18 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { Col, Row } from "antd";
-import AdminNav from "../../../components/nav/AdminNav";
-
-import { useSelector } from "react-redux";
-import {
-  createProduct,
-  getAllBrands,
-  getAllColors,
-} from "../../../functions/product";
-
-import QuantityTable from "./QuantityTable";
-import { getCategories } from "../../../functions/category";
-
+import React, { useEffect, useState } from "react";
 import ProductForm from "../../../components/forms/ProductForm";
+import AdminNav from "../../../components/nav/AdminNav";
+import { getProduct } from "../../../functions/product";
 
 const initialValues = {
   articleNo: "",
@@ -26,9 +16,11 @@ const initialValues = {
   brand: "",
 };
 
-function ProductCreate() {
+function ProductUpdate({ match }) {
   const [values, setValues] = useState(initialValues);
   const [quantity, setQuantity] = useState([]);
+  // router
+  const { slug } = match.params;
 
   // destructure
   const {
@@ -43,6 +35,33 @@ function ProductCreate() {
     brand,
   } = values;
 
+  useEffect(() => {
+    loadProduct();
+  }, []);
+
+  useEffect(() => {
+    console.log(values.quantity);
+    const prevQuantity = values.quantity
+      ? values.quantity.map((item) => {
+          return {
+            color: item.color_Id.name,
+            size: item.size,
+            available: item.available,
+            key: quantity.length,
+            color_Id: item.color_Id._id,
+          };
+        })
+      : [];
+    console.log(prevQuantity);
+    setQuantity(prevQuantity);
+    console.log(quantity);
+  }, [values.quantity]);
+
+  const loadProduct = () => {
+    getProduct(slug).then((p) => {
+      setValues({ ...values, ...p.data });
+    });
+  };
   return (
     <>
       <Row>
@@ -66,4 +85,4 @@ function ProductCreate() {
   );
 }
 
-export default ProductCreate;
+export default ProductUpdate;
